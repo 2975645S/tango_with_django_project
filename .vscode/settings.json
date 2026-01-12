@@ -1,6 +1,11 @@
 {
     "files.exclude": {
         ".venv": true,
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "rango/tests*": true
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
     }
 }
