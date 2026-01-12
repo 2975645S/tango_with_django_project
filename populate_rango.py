@@ -11,20 +11,20 @@ def add_page(category: Category, title: str, url: str, views: int = 0) -> Page:
     p.save()
     return p
 
-def add_category(name: str):
-    c = Category.objects.get_or_create(name=name)[0]
+def add_category(name: str, views: int = 0, likes: int = 0) -> Category:
+    c = Category.objects.get_or_create(name=name, views=views, likes=likes)[0]
     c.save()
     return c
 
 def populate():
-    for category, category_data in CATEGORIES.items():
-        c = add_category(category)
-        for p in category_data["pages"]:
-            add_page(c, p["title"], p["url"])
+    for category, c_data in CATEGORIES.items():
+        c = add_category(category, c_data["views"], c_data["likes"])
+        for p_data in c_data["pages"]:
+            add_page(c, p_data["title"], p_data["url"])
 
     for c in Category.objects.all():
-        for p in Page.objects.filter(category=c):
-            print(f"- {c}: {p}")
+        for p_data in Page.objects.filter(category=c):
+            print(f"- {c}: {p_data}")
 
 PYTHON_PAGES = [
     {"title": "Official Python Tutorial",
@@ -51,9 +51,9 @@ OTHER_PAGES = [
      "url":"http://flask.pocoo.org"}
 ]
 
-CATEGORIES = {"Python": {"pages": PYTHON_PAGES},
-        "Django": {"pages": DJANGO_PAGES},
-        "Other Frameworks": {"pages": OTHER_PAGES}}
+CATEGORIES = {"Python": {"pages": PYTHON_PAGES, "views": 128, "likes": 64},
+        "Django": {"pages": DJANGO_PAGES, "views": 64, "likes": 32},
+        "Other Frameworks": {"pages": OTHER_PAGES, "views": 32, "likes": 16}}
 
 if __name__ == "__main__":
     print("Starting Rango population script...")

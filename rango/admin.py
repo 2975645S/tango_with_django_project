@@ -1,7 +1,8 @@
 from django.contrib import admin
-from rango import models
+from rango.models import Category, Page
 
-TO_REGISTER = [models.Category, models.Page]
+class PageAdmin(admin.ModelAdmin):
+    list_display = ("title", "category", "url")
 
-for model in TO_REGISTER:
-    admin.site.register(model)
+admin.site.register(Category)
+admin.site.register(Page, PageAdmin)
