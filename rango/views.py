@@ -6,6 +6,7 @@ from rango.models import Category, Page
 def index(request: HttpRequest):
     context = {"boldmessage": "Crunchy, creamy, cookie, candy, cupcake!"}
     context["categories"] = Category.objects.order_by("-likes")[:5]  # top 5 categories
+    context["pages"] = Page.objects.order_by("-views")[:5]  # top 5 pages
 
     return render(request, "rango/index.html", context=context)
 
