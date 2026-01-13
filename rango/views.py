@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from rango.models import Category, Page
-from rango.forms import CategoryForm
+from rango.forms import CategoryForm, PageForm
 
 
 def index(request: HttpRequest):
@@ -21,18 +21,17 @@ def about(request: HttpRequest):
 
 
 def show_category(request: HttpRequest, category_name_slug: str):
-    context = {}
 
     try:
         category = Category.objects.get(slug=category_name_slug)
         pages = Page.objects.filter(category=category)
-        context["category"] = category
-        context["pages"] = pages
     except Category.DoesNotExist:
-        context["category"] = None
-        context["pages"] = None
+        category = None
+        pages = None
 
-    return render(request, "rango/category.html", context)
+    return render(
+        request, "rango/category.html", {"category": category, "pages": pages}
+    )
 
 
 def add_category(request: HttpRequest):
@@ -43,8 +42,37 @@ def add_category(request: HttpRequest):
 
         if form.is_valid():
             form.save(commit=True)
-            return index(request)
+            return redirect("/rango/")
         else:
             print(form.errors)
 
     return render(request, "rango/add_category.html", {"form": form})
+
+
+def add_page(request: HttpRequest, category_name_slug: str):
+    try:
+        category = Category.objects.get(slug=category_name_slug)
+    except Category.DoesNotExist:
+        return redirect("/rango/")
+
+    form = PageForm()
+
+    if request.method == "POST":
+        form = PageForm(request.POST)
+
+        if form.is_valid():
+            page = form.save(commit=False)
+            page.category = category
+            page.views = 0
+            page.save()
+            return redirect(
+                "rango:show_category", category_name_slug=category_name_slug
+            )
+        else:
+            print(form.errors)
+
+    return render(
+        request,
+        "rango/add_page.html",
+        {"form": form, "category": category},
+    )

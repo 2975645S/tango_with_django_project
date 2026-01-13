@@ -8,10 +8,4 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
     },
-
-    "djlint.useVenv": false,
-    "[django-html]": {
-        "editor.defaultFormatter": "monosans.djlint",
-        "editor.formatOnSave": true
-    }
 }
