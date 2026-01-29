@@ -1,5 +1,13 @@
-from django.forms import ModelForm, CharField, IntegerField, HiddenInput, URLField
-from rango.models import Category, Page, MAX_NAME_LENGTH, MAX_TITLE_LENGTH
+from django.forms import (
+    ModelForm,
+    CharField,
+    IntegerField,
+    HiddenInput,
+    URLField,
+    PasswordInput,
+)
+from django.contrib.auth.models import User
+from rango.models import Category, Page, UserProfile, MAX_NAME_LENGTH, MAX_TITLE_LENGTH
 
 
 class CategoryForm(ModelForm):
@@ -35,3 +43,17 @@ class PageForm(ModelForm):
             cleaned_data["url"] = url
 
         return cleaned_data
+
+
+class UserForm(ModelForm):
+    password = CharField(widget=PasswordInput())
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password")
+
+
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ("website", "picture")

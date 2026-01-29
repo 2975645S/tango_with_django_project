@@ -6,8 +6,11 @@ from django.db.models import (
     SlugField,
     ForeignKey,
     CASCADE,
+    OneToOneField,
+    ImageField,
 )
 from django.template.defaultfilters import slugify
+from django.contrib.auth.models import User
 
 MAX_NAME_LENGTH = 128
 MAX_TITLE_LENGTH = 128
@@ -38,3 +41,9 @@ class Page(Model):
 
     def __str__(self):
         return self.title
+
+
+class UserProfile(Model):
+    user = OneToOneField(User, on_delete=CASCADE)
+    website = URLField(blank=True)
+    picture = ImageField(upload_to="profile_images", blank=True)
