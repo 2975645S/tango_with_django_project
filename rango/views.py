@@ -35,6 +35,7 @@ def show_category(request: HttpRequest, category_name_slug: str):
     )
 
 
+@login_required
 def add_category(request: HttpRequest):
     form = CategoryForm()
 
@@ -50,6 +51,7 @@ def add_category(request: HttpRequest):
     return render(request, "rango/add_category.html", {"form": form})
 
 
+@login_required
 def add_page(request: HttpRequest, category_name_slug: str):
     try:
         category = Category.objects.get(slug=category_name_slug)
@@ -137,7 +139,7 @@ def user_login(request: HttpRequest):
 
 @login_required
 def restricted(request: HttpRequest):
-    return HttpResponse("Since you're logged in, you can see this text!")
+    return render(request, "rango/restricted.html")
 
 
 @login_required
