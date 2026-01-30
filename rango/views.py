@@ -4,12 +4,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+from datetime import datetime
 
 
 def index(request: HttpRequest):
     context = {"boldmessage": "Crunchy, creamy, cookie, candy, cupcake!"}
     context["categories"] = Category.objects.order_by("-likes")[:5]  # top 5 categories
     context["pages"] = Page.objects.order_by("-views")[:5]  # top 5 pages
+
+    visitor_cookie_handler(request)
+    context["visits"] = request.session["visits"]
 
     return render(request, "rango/index.html", context)
 
@@ -146,3 +150,28 @@ def restricted(request: HttpRequest):
 def user_logout(request: HttpRequest):
     logout(request)
     return redirect("rango:index")
+
+
+def get_server_side_cookie(
+    request: HttpRequest, cookie: str, default_val: str = None
+) -> str:
+    val = request.session.get(cookie)
+    if not val:
+        val = default_val
+    return val
+
+
+def visitor_cookie_handler(request: HttpRequest):
+    visits = int(get_server_side_cookie(request, "visits", "1"))
+    last_visit_cookie = get_server_side_cookie(
+        request, "last_visit", str(datetime.now())
+    )
+    last_visit_time = datetime.strptime(last_visit_cookie[:-7], "%Y-%m-%d %H:%M:%S")
+
+    if (datetime.now() - last_visit_time).days > 0:
+        visits += 1
+        request.session["last_visit"] = str(datetime.now())
+    else:
+        request.session["last_visit"] = last_visit_cookie
+
+    request.session["visits"] = visits
