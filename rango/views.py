@@ -13,17 +13,14 @@ def index(request: HttpRequest):
     context["pages"] = Page.objects.order_by("-views")[:5]  # top 5 pages
 
     visitor_cookie_handler(request)
-    context["visits"] = request.session["visits"]
-
     return render(request, "rango/index.html", context)
 
 
 def about(request: HttpRequest):
-    return render(
-        request,
-        "rango/about.html",
-        {"boldmessage": "This tutorial has been put together by Jacob."},
-    )
+    context = {"boldmessage": "This tutorial has been put together by Jacob."}
+    context["visits"] = request.session["visits"]
+
+    return render(request, "rango/about.html", context)
 
 
 def show_category(request: HttpRequest, category_name_slug: str):
